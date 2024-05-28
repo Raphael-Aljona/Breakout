@@ -1,4 +1,4 @@
-import { Actor, CollisionType, Color, Engine, Font, Text, vec } from "excalibur"
+import { Actor, CollisionType, Color, Engine, Font, FontUnit, Label, Sound, Text, vec } from "excalibur"
 import { vector } from "excalibur/build/dist/Util/DrawUtil"
 
 //  1 - criar uma instancia de Engine, que representa o jogo
@@ -43,7 +43,7 @@ const bolinha = new Actor ({
 bolinha.body.collisionType = CollisionType.Passive
 
 // 5 - Criar movimentação da bolinha
-const velocidadeBolinha = vec(600, 600)
+const velocidadeBolinha = vec(900, 900)
 
 setTimeout (() => {
 	bolinha.vel = velocidadeBolinha
@@ -116,26 +116,46 @@ for (let j = 0; j < linhas; j++){
 	game.add (bloco)
  })
 
-//  Adicionando pontuação
- let pontos = 0
  
- const textoPontos = new Text({
-	text: "Hello World",
-	font: new Font ({ size: 20})
+ //  const textoPontos = new Text({
+	 // 	text: "Hello World",
+	 // 	font: new Font ({ size: 20})
+	 //  })
+	 
+	 //  const objetoTexto = new Actor({
+		 // 	x: game.drawWidth - 80,
+		 // 	y: game.drawHeight - 15
+		 //  })
+		 
+		 //  objetoTexto.graphics.use(textoPontos)
+		 //  game.add(objetoTexto)
+		 
+
+
+		 
+ //  Adicionando pontuação
+ let pontos = 0
+		 
+ const textoPontos = new Label({
+	text: pontos.toString(),
+	font: new Font({
+		size: 40,
+		color: Color.White ,
+		strokeColor: Color.Black,
+		unit: FontUnit.Px ,
+	}),
+	pos: vec (700, 500)
  })
 
- const objetoTexto = new Actor({
-	x: game.drawWidth - 80,
-	y: game.drawHeight - 15
- })
- 
- objetoTexto.graphics.use(textoPontos)
- game.add(objetoTexto)
+ game.add(textoPontos)
 
 
  let colidindo: boolean = false
 
 
+ let audio = new Audio ('audio.mp3');
+ let audio2 = new Audio ('audio2.mp3');
+ let audio3 = new Audio ('audio3.mp3')
 
  bolinha.on("collisionstart", (event) =>{
 
@@ -143,10 +163,24 @@ for (let j = 0; j < linhas; j++){
 
 	// Se o elemento colidido for um bloco da lista de blocos (destrutivel)
 
+
+
 	if (ListaBlocos.includes(event.other) ){
 		// Destruir o bloco colidido
 
 		event.other.kill ()
+		pontos ++
+
+		textoPontos.text = pontos.toString()
+		audio.play();
+
+		console.log (pontos)
+
+		if (pontos == 15) {
+			audio3.play();
+			alert ("u win")
+			window.location.reload ()
+		}
 	}
 
 	// Rebater a bolinha - Inverter as direções
@@ -174,9 +208,13 @@ for (let j = 0; j < linhas; j++){
  })
 
  bolinha.on("exitviewport", () => {
+	audio2.play();
 	alert("E morreu")
 	window.location.reload ()
+	
  })
+ 
+
  
 
 
