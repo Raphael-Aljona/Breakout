@@ -1,4 +1,4 @@
-import { Actor, CollisionType, Color, Engine, Font, FontUnit, Label, Sound, Text, vec } from "excalibur"
+import { Actor, CollisionType, Color, Engine, Font, FontUnit, Label, Loader, Sound, Text, vec } from "excalibur"
 import { vector } from "excalibur/build/dist/Util/DrawUtil"
 
 //  1 - criar uma instancia de Engine, que representa o jogo
@@ -41,6 +41,21 @@ const bolinha = new Actor ({
 })
 
 bolinha.body.collisionType = CollisionType.Passive
+
+let coresBolinha = [
+	Color.Black, 
+	Color.Chartreuse, 
+	Color.Cyan,
+	Color.ExcaliburBlue,
+	Color.Magenta,
+	Color.Orange, 
+	Color.Green,
+	Color.Rose,
+	Color.Yellow,
+	Color.White,
+]
+
+let numeroCores = coresBolinha.length
 
 // 5 - Criar movimentação da bolinha
 const velocidadeBolinha = vec(900, 900)
@@ -153,9 +168,14 @@ for (let j = 0; j < linhas; j++){
  let colidindo: boolean = false
 
 
- let audio = new Audio ('audio.mp3');
- let audio2 = new Audio ('audio2.mp3');
- let audio3 = new Audio ('audio3.mp3')
+//  let audio = new Audio ('audio.mp3');
+//  let audio2 = new Audio ('audio2.mp3');
+//  let audio3 = new Audio ('audio3.mp3')
+
+ const sound = new Sound ('./src/sounds/audio.mp3')
+ const sound2 = new Sound ('./src/sounds/audio2.mp3')
+ const sound3 = new Sound ('./src/sounds/audio3.mp3')
+ const loader = new Loader ([sound, sound2, sound3])
 
  bolinha.on("collisionstart", (event) =>{
 
@@ -171,14 +191,17 @@ for (let j = 0; j < linhas; j++){
 		event.other.kill ()
 		pontos ++
 
+		// bolinha.color = coresBolinha[ Math.trunc( Math.random()  * numeroCores)]
+		bolinha.color = event.other.color
+
 		textoPontos.text = pontos.toString()
-		audio.play();
+		sound.play();
 
 		console.log (pontos)
 
 		if (pontos == 15) {
-			audio3.play();
-			alert ("u win")
+			sound3.play();
+			alert ("Parabéns, você foi capaz de superar essa maluquice")
 			window.location.reload ()
 		}
 	}
@@ -208,7 +231,7 @@ for (let j = 0; j < linhas; j++){
  })
 
  bolinha.on("exitviewport", () => {
-	audio2.play();
+	sound2.play();
 	alert("E morreu")
 	window.location.reload ()
 	
@@ -217,6 +240,4 @@ for (let j = 0; j < linhas; j++){
 
  
 
-
-
-game.start()
+await game.start(loader)
